@@ -1,0 +1,11 @@
+{
+  "name": "datavizsociety",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:1wheel/datavizsociety.git",
+  "author": "Adam Pearce <1wheel@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "scrape-stl": "^1.0.3"
+  }
+}
