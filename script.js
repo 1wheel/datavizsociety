@@ -14,14 +14,20 @@ jp.nestBy(membership, d => d.key)
 var byNumSame = jp.nestBy(membership, d => d.numSame)
 
 // the data, visualization, society cols uniquely identify 633 people
-console.log(
-  _.sortBy(
-    byNumSame.map(d => {return {count: d.length, numSame: +d.key}}), 
-    d => +d.numSame)) 
+// console.log(
+//   _.sortBy(
+//     byNumSame.map(d => {return {count: d.length, numSame: +d.key}}), 
+//     d => +d.numSame)) 
+
+var isPNG = {}
+glob.sync(__dirname + '/badges/png/*').forEach(path => {
+  var id = _.last(path.split('/')).replace('.png', '')
+  isPNG[id] = true
+})
 
 
 // extract original responses from the badges
-var badges = glob.sync(__dirname + '/badges/svg/*')
+var badges = glob.sync(__dirname + '/badges/svg/*').sort()
   .map((path, i) => {
     var id = _.last(path.split('/')).replace('.svg', '')
     
@@ -38,6 +44,11 @@ var badges = glob.sync(__dirname + '/badges/svg/*')
 
     return {id, x1, triangles}
   })
+  .filter(d => isPNG[d.id])
+
+console.log(glob.sync(__dirname + '/badges/svg/*').length)
+console.log(glob.sync(__dirname + '/badges/png/*').length)
+console.log(badges.length)
 
 // io.writeDataSync(__dirname + '/challenge_data/badges.csv', badges)
 
@@ -91,7 +102,7 @@ membership
   })
 
 // 594 matches found
-console.log('matches', d3.sum(membership, d => !!d.match))
+// console.log('matches', d3.sum(membership, d => !!d.match))
 
 
 
@@ -104,6 +115,29 @@ console.log('matches', d3.sum(membership, d => !!d.match))
 
 //     console.log(d.i, d.match.i)
 //   })
+
+
+// console.log(badges[0].triangles)
+
+
+badgeVals = badges.map(d => {
+  var rv = {id: d.id}
+  delete rv.id
+
+  d.triangles.forEach((tri, ti) => {
+    var str = ['d', 'v', 's'][ti]
+    tri.vals.forEach((d, i) => rv[str + i] = d )
+  })
+
+  return rv
+})
+
+// badgeVals = badgeVals.slice(0, 32)
+io.writeDataSync('../load-projector-data/metadata.tsv', badgeVals)
+
+// badgeVals.forEach((d, i) => d.id = i)
+io.writeDataSync('../load-projector-data/tensors.tsv', badgeVals)
+
 
 
 
